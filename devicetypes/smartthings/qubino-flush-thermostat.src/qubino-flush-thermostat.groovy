@@ -212,6 +212,7 @@ def zwaveEvent(physicalgraph.zwave.commands.configurationv2.ConfigurationReport 
 	//this device doesn't act like normal thermostat, it can support either 'cool' or 'heat' after configuration
 	if (cmd.parameterNumber == 59 && !state.isThermostatModeSet) {
 		state.supportedModes.add(cmd.scaledConfigurationValue ? "cool" : "heat")
+		sendEvent([name: cmd.scaledConfigurationValue ? "heatingSetpoint" : "coolingSetpoint", value: 0, unit: temperatureScale, isStateChange: true])
 		state.isThermostatModeSet = true
 	}
 	createEvent(name: "supportedThermostatModes", value: state.supportedModes.encodeAsJson(), displayed: false)
@@ -282,6 +283,10 @@ def updateSetpoint(setpoint, setpointType) {
 			"delay 2000",
 			secure(zwave.thermostatSetpointV2.thermostatSetpointGet(setpointType: setpointType))
 	]
+}
+
+def resetEnergyMeter() {
+	log.debug "resetEnergyMeter: not implemented"
 }
 
 def configure() {
